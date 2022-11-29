@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import FastAPI, status, HTTPException, Depends, APIRouter, Response
+from prometheus_fastapi_instrumentator import Instrumentator
 from database import Base, engine, SessionLocal
 from sqlalchemy.orm import Session
 import models
@@ -14,6 +15,8 @@ Base.metadata.create_all(engine)
 app = FastAPI()
 
 router = APIRouter(tags=["Wallet"])
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
 
 # Helper function to get database session
 def get_session():
@@ -50,7 +53,7 @@ def create_wallet(wallet: schemas.WalletCreate, session: Session = Depends(get_s
     return wallet
 
 @router.put("/update/{user_uid}", response_model=schemas.Wallet)
-def update_balance(user_uid: str, wallet: schemas.WalletCreate, session: Session = Depends(get_session)):
+def update_balance(user_uid: str, wallet: schemas.WalletUpdate, session: Session = Depends(get_session)):
     wallet_obj = session.query(models.Wallet).filter_by(user_uid=wallet.user_uid).first()
 
     if wallet_obj:
@@ -66,7 +69,7 @@ def update_balance(user_uid: str, wallet: schemas.WalletCreate, session: Session
 def delete_wallet(uid: str, session: Session = Depends(get_session)):
     wallet = session.query(models.Wallet).get(uid)
 
-    if user:
+    if wallet:
         session.delete(wallet)
         session.commit()
     else:

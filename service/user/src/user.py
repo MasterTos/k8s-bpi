@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import FastAPI, status, HTTPException, Depends, APIRouter, Response
+from prometheus_fastapi_instrumentator import Instrumentator
 from database import Base, engine, SessionLocal
 from sqlalchemy.orm import Session
 import models
@@ -14,6 +15,8 @@ Base.metadata.create_all(engine)
 app = FastAPI()
 
 router = APIRouter(tags=["Users"])
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
 
 # Helper function to get database session
 def get_session():
