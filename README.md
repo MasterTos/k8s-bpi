@@ -28,10 +28,10 @@
 
 *ในกระบวนการติดตั้งทั้งหมดนี้ถูกติดตั้งอยู่บน Microk8s*
 
-### For Microk8sk get s
+### For Microk8s
 
 ```bash
-microk8s enable dns hostpath-storage metrics-server helm3 cert-manager
+microk8s enable dns hostpath-storage metrics-server helm cert-manager
 ```
 
 ### Install metrics-server (Optional)
