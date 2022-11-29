@@ -1,0 +1,58 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user-app
+  name: user-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-app
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "8000"
+        prometheus.io/scrape: "true"
+      labels:
+        app: user-app
+        type: backend
+    spec:
+      containers:
+      - image: mastertos/bpi-user:latest
+        name: user-api
+        args:
+          - "uvicorn"
+          - "user:app"
+          - "--proxy-headers"
+          - "--root-path"
+          - "/api/v1/user"
+          - "--host"
+          - "0.0.0.0"
+        ports:
+          - containerPort: 8000
+        envFrom:
+            - configMapRef:
+                name: user-app-config
+        imagePullPolicy: Always
+        resources: 
+          requests:
+            cpu: 50m
+          limits:
+            cpu: 200m
+            memory: 100M
+        livenessProbe:
+          httpGet:
+            path: /healthz/livez
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /healthz/readyz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+status: {}

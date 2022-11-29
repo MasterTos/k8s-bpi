@@ -1,0 +1,58 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wallet-app
+  name: wallet-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallet-app
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "8000"
+        prometheus.io/scrape: "true"
+      labels:
+        app: wallet-app
+        type: backend
+    spec:
+      containers:
+      - image: mastertos/bpi-wallet:latest
+        name: wallet-api
+        args:
+          - "uvicorn"
+          - "wallet:app"
+          - "--proxy-headers"
+          - "--root-path"
+          - "/api/v1/wallet"
+          - "--host"
+          - "0.0.0.0"
+        ports:
+          - containerPort: 8000
+        envFrom:
+            - configMapRef:
+                name: wallet-app-config
+        imagePullPolicy: Always
+        resources: 
+          requests:
+            cpu: 50m
+          limits:
+            cpu: 200m
+            memory: 100M
+        livenessProbe:
+          httpGet:
+            path: /healthz/livez
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /healthz/readyz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+status: {}

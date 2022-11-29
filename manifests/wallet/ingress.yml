@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wallet-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: wallet-svc
+            port:
+              number: 80
+        path: /api/v1/wallet(/|$)(.*)
+        pathType: Prefix
+status:
+  loadBalancer: {}
