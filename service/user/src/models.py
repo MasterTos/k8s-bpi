@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Float, String
 from database import Base
 import uuid
 
 class User(Base):
     __tablename__ = 'users'
-    uuid = Column(String, primary_key=True)
+    uid = Column(String(8), primary_key=True)
     first_name = Column(String(256))
     last_name = Column(String(256))

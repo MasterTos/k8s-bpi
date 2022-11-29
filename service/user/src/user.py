@@ -41,18 +41,18 @@ def get_all_users(session: Session = Depends(get_session)):
 
     return users
 
-@router.get("/{uuid}", response_model=schemas.User)
-def get_user(uuid: str, session: Session = Depends(get_session)):
-    user = session.query(models.User).get(uuid)
+@router.get("/{uid}", response_model=schemas.User)
+def get_user(uid: str, session: Session = Depends(get_session)):
+    user = session.query(models.User).get(uid)
 
     if not user:
-        raise HTTPException(status_code=404, detail=f"User {uuid} not found")
+        raise HTTPException(status_code=404, detail=f"User {uid} not found")
 
     return user
 
 @router.post("/create",response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, session: Session = Depends(get_session)):
-    userdb = models.User(uuid = str(uuid.uuid4())[:8], first_name = user.first_name, last_name=user.last_name)
+    userdb = models.User(uid = str(uuid.uuid4())[:8], first_name = user.first_name, last_name=user.last_name)
 
     session.add(userdb)
     session.commit()
@@ -60,9 +60,9 @@ def create_user(user: schemas.UserCreate, session: Session = Depends(get_session
 
     return userdb
 
-@router.put("/update/{uuid}")
-def update_user(uuid: str, user: schemas.UserCreate, session: Session = Depends(get_session)):
-    user_obj = session.query(models.User).get(uuid)
+@router.put("/update/{uid}")
+def update_user(uid: str, user: schemas.UserCreate, session: Session = Depends(get_session)):
+    user_obj = session.query(models.User).get(uid)
 
     if user_obj:
       user_obj.first_name = user.first_name
@@ -70,19 +70,19 @@ def update_user(uuid: str, user: schemas.UserCreate, session: Session = Depends(
       session.commit()
 
     if not user_obj:
-        raise HTTPException(status_code=404, detail=f"User {uuid} not found")
+        raise HTTPException(status_code=404, detail=f"User {uid} not found")
 
     return user_obj
 
-@router.delete("/delete/{uuid}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(uuid: str, session: Session = Depends(get_session)):
-    user = session.query(models.User).get(uuid)
+@router.delete("/delete/{uid}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(uid: str, session: Session = Depends(get_session)):
+    user = session.query(models.User).get(uid)
 
     if user:
         session.delete(user)
         session.commit()
     else:
-        raise HTTPException(status_code=404, detail=f"User {uuid} not found")
+        raise HTTPException(status_code=404, detail=f"User {uid} not found")
 
     return None
 

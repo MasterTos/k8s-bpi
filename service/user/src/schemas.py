@@ -7,7 +7,7 @@ class UserCreate(BaseModel):
 
 # Complete User Schema (Pydantic Model)
 class User(BaseModel):
-    uuid: str
+    uid: str
     first_name: str
     last_name: str
 

@@ -15,4 +15,4 @@ HEALTHCHECK --interval=21s --timeout=3s --start-period=10s CMD curl --fail http:
 
 
 ENTRYPOINT ["/init.sh"]
-CMD ["uvicorn", "user:app", "--proxy-headers", "--host", "0.0.0.0", "--reload", "--reload-dir", "/code"]
+CMD ["uvicorn", "wallet:app", "--proxy-headers", "--host", "0.0.0.0", "--reload", "--reload-dir", "/code"]
